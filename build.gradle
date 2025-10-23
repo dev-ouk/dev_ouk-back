@@ -1,54 +1,68 @@
 plugins {
-    id 'java'
-    id 'org.springframework.boot' version '3.5.6'
     id 'io.spring.dependency-management' version '1.1.7'
 }
 
-group = 'com.dev-ouk'
-version = '0.0.1-SNAPSHOT'
-description = 'dev_ouk-back'
+subprojects {
+    apply plugin: 'java'
 
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
+    group = 'com.dev-ouk'
+    version = '0.0.1-SNAPSHOT'
+    description = 'dev_ouk-back'
+
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(21)
+        }
+    }
+
+    configurations {
+        compileOnly {
+            extendsFrom annotationProcessor
+        }
+    }
+
+    repositories {
+        mavenCentral()
+    }
+
+    tasks.named('test', Test) {
+        useJUnitPlatform()
     }
 }
 
-configurations {
-    compileOnly {
-        extendsFrom annotationProcessor
+tasks.register("checkModuleDeps"){
+    group = "verification"
+    description = "Check module dependency graph and prevent circular or invalid references."
+
+    doLast{
+        subprojects.each { project ->
+            project.configurations
+                .matching { it.name in ['implementation', 'api', 'compileOnly'] }
+                .each { config ->
+                    config.dependencies.each {
+                        dep ->
+                            if (dep instanceof ProjectDependency) {
+                                def from = project.name
+                                def to = dep.dependencyProject.name
+
+                                // 순환 참조 금지
+                                if (from == to) {
+                                    throw new GradleException("❌ 순환 의존 발견: ${from} → ${to}")
+                                }
+
+                                // domain -> infra/app 금지
+                                if(from == 'domain' && (to == 'infra' || to == 'app')) {
+                                    throw new GradleException("🚫 domain 모듈이 ${to} 모듈을 참조하면 안 됩니다.")
+                                }
+
+                                // infra -> app 금지
+                                if(from == 'infra' && to == 'app') {
+                                    throw new GradleException("🚫 infra 모듈이 app 모듈을 참조하면 안 됩니다.")
+                                }
+                            }
+                    }
+                }
+        }
+        println "✅ 모듈 의존성 검증 통과!"
     }
-}
-
-repositories {
-    mavenCentral()
-}
-
-dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-actuator'
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
-    implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
-    implementation 'org.springframework.boot:spring-boot-starter-security'
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.flywaydb:flyway-core'
-    implementation 'org.flywaydb:flyway-database-postgresql'
-    compileOnly 'org.projectlombok:lombok'
-    runtimeOnly 'com.h2database:h2'
-    runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
-    runtimeOnly 'org.postgresql:postgresql'
-    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
-    annotationProcessor 'org.projectlombok:lombok'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'org.springframework.boot:spring-boot-testcontainers'
-    testImplementation 'org.springframework.security:spring-security-test'
-    testImplementation 'org.testcontainers:junit-jupiter'
-    testImplementation 'org.testcontainers:postgresql'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-}
-
-tasks.named('test') {
-    useJUnitPlatform()
 }
