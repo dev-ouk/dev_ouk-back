@@ -2,6 +2,7 @@ plugins {
     id 'io.spring.dependency-management' version '1.1.7'
     id 'com.diffplug.spotless' version '6.25.0'
     id 'checkstyle'
+    id 'jacoco'
 }
 
 subprojects {
@@ -9,6 +10,7 @@ subprojects {
     apply plugin: 'io.spring.dependency-management'
     apply plugin: 'com.diffplug.spotless'
     apply plugin: 'checkstyle'
+    apply plugin: 'jacoco'
 
     group = 'com.dev-ouk'
     version = '0.0.1-SNAPSHOT'
@@ -45,16 +47,47 @@ subprojects {
     spotless {
         java {
             target 'src/**/*.java'
-            googleJavaFormat('1.17.0') // Java 17 스타일 기반 포맷터 (21도 문제 없음)
+            googleJavaFormat('1.17.0')
             removeUnusedImports()
             trimTrailingWhitespace()
             endWithNewline()
         }
     }
 
+    jacoco {
+        toolVersion = '0.8.13'
+    }
+
     tasks.named('test', Test) {
         useJUnitPlatform()
+        finalizedBy 'jacocoTestReport'
     }
+
+    jacocoTestReport {
+        dependsOn test
+        reports {
+            xml.required.set(true)
+            html.required.set(true)
+        }
+    }
+
+    jacocoTestCoverageVerification {
+        violationRules {
+            rule {
+                element = 'BUNDLE'
+                limit {
+                    counter = 'LINE'
+                    value = 'COVEREDRATIO'
+                    minimum = 0.70
+                }
+            }
+        }
+    }
+
+    check.dependsOn(
+            'spotlessCheck',
+            'jacocoTestCoverageVerification'
+    )
 }
 
 tasks.register("checkModuleDeps"){
