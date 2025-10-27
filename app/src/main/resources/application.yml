@@ -6,3 +6,9 @@ spring:
     redis:
       port: 6379
       host: redis
+
+logging:
+  level:
+    org.springframework.web: DEBUG
+    org.springframework.filter: DEBUG
+    org.springframework.boot.web.servlet: DEBUG
