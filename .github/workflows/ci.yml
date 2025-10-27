@@ -1,0 +1,47 @@
+name: CI - Build & Test & Docker Build
+
+on:
+  push:
+    branches: [ "main", "develop" ]
+  pull_request:
+    branches: [ "main", "develop" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: gradle
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Build and Test
+        run: ./gradlew clean build --no-daemon
+
+      # 5️⃣ Docker 이미지 빌드
+      - name: Build Docker Image
+        run: docker build -f app/Dockerfile -t devouk/app:${{ github.sha }} .
+
+      # 6️⃣ ECR 푸시를 위한 placeholder 단계 (AWS 자격 세팅 전까지 주석)
+      # - name: Configure AWS credentials
+      #   uses: aws-actions/configure-aws-credentials@v4
+      #   with:
+      #     role-to-assume: arn:aws:iam::<ACCOUNT_ID>:role/<ROLE_NAME>
+      #     aws-region: ap-northeast-2
+
+      # - name: Login to Amazon ECR
+      #   uses: aws-actions/amazon-ecr-login@v2
+
+      # - name: Push image to ECR
+      #   run: |
+      #     docker tag devouk/app:${{ github.sha }} $ECR_REPO_URI:latest
+      #     docker push $ECR_REPO_URI:latest
