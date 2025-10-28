@@ -27,6 +27,36 @@ jobs:
       - name: Build and Test
         run: ./gradlew clean build --no-daemon
 
+      - name: Architecture check (jdeps)
+        run: |
+          echo "Checking that domain does NOT depend on infra or app..."
+          jdeps \
+            --ignore-missing-deps \
+            --recursive \
+            --class-path "domain/build/classes/java/main" \
+            domain/build/classes/java/main > domain_deps.txt
+          
+          if grep -E "(infra\.|app\.)" domain_deps.txt; then
+            echo "ERROR: domain module illegally depends on infra or app"
+            cat domain_deps.txt
+            exit 1
+          fi
+          
+          echo "Checking that infra does NOT depend on app..."
+          jdeps \
+            --ignore-missing-deps \
+            --recursive \
+            --class-path "infra/build/classes/java/main" \
+            infra/build/classes/java/main > infra_deps.txt
+          
+          if grep -E "(app\.)" infra_deps.txt; then
+            echo "ERROR: infra module illegally depends on app"
+            cat infra_deps.txt
+            exit 1
+          fi
+          
+          echo "jdeps check passed ✅"
+
       # 5️⃣ Docker 이미지 빌드
       - name: Build Docker Image
         run: docker build -f app/Dockerfile -t devouk/app:${{ github.sha }} .
