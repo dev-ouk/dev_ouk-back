@@ -1,5 +1,6 @@
 package com.devouk.devouk_back.member.controller;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
@@ -115,5 +116,34 @@ public class MemberControllerWebMvcTest {
         .andExpect(jsonPath("$[0].email").value("a@a.com"))
         .andExpect(jsonPath("$[0].name").value("A"))
         .andExpect(jsonPath("$[1].id").value(2L));
+  }
+
+  @Test
+  @DisplayName("모든 요청은 응답 헤더에 X-Correlation-ID를 실어준다")
+  void response_has_correlation_id_header() throws Exception {
+    BDDMockito.given(memberAppService.createMember(any(MemberRequest.class)))
+        .willReturn(new MemberResponse(1L, "valid@test.com", "상욱"));
+
+    String body =
+        """
+        {
+            "email": "valid@test.com",
+            "name": "상욱"
+        }
+        """;
+
+    var result =
+        mockMvc
+            .perform(
+                post("/members")
+                    .with(csrf())
+                    .with(user("testUser"))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(body))
+            .andExpect(status().isOk())
+            .andReturn();
+
+    String corr = result.getResponse().getHeader("X-Correlation-ID");
+    assertThat(corr).isNotBlank();
   }
 }
