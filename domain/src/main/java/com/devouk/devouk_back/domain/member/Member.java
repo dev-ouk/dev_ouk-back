@@ -26,8 +26,12 @@ public class Member {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (!(o instanceof Member)) return false;
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof Member)) {
+      return false;
+    }
     Member that = (Member) o;
     return Objects.equals(email, that.email);
   }
