@@ -22,3 +22,10 @@ info:
     name: devouk-back
     version: 0.0.1
     description: Dev Ouk Backend Application
+
+app:
+  name: Dev Ouk Backend
+  cors:
+    allowed-origins:
+      - "http://localhost:3000"
+      - "http://localhost:5173"
