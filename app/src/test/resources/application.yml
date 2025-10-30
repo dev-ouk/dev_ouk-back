@@ -2,11 +2,16 @@ spring:
   application:
     name: dev_ouk-back
 
+#  data:
+#    redis:
+#      port: 6379
+#      host: redis
+
 logging:
   level:
-    org.springframework.web: INFO
-    org.springframework.filter: INFO
-    org.springframework.boot.web.servlet: INFO
+    org.springframework.web: DEBUG
+    org.springframework.filter: DEBUG
+    org.springframework.boot.web.servlet: DEBUG
 
 management:
   endpoints:
@@ -16,7 +21,9 @@ management:
   endpoint:
     health:
       show-details: always
-
+  health:
+    redis:
+      enabled: false
 info:
   app:
     name: devouk-back

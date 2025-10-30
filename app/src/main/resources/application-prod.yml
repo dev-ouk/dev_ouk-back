@@ -1,0 +1,27 @@
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+  data:
+    redis:
+      port: ${REDIS_PORT}
+      host: ${REDIS_HOST}
+
+#  datasource:
+#    url: ${POSTGRES_DATABASE_URL}
+#    username: ${POSTGRES_DATABASE_USERNAME}
+#    password: ${POSTGRES_DATABASE_PASSWORD}
+#    driver-class-name: org.postgresql.Driver
+
+logging:
+  level:
+    org.springframework.web: INFO
+    org.springframework.filter: INFO
+    org.springframework.boot.web.servlet: INFO
+    com.devouk: INFO
+
+management:
+  health:
+    redis:
+      enabled: true
