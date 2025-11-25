@@ -3,6 +3,7 @@ package com.devouk.devouk_back.error;
 import com.devouk.devouk_back.domain.common.exception.BusinessException;
 import com.devouk.devouk_back.domain.common.exception.DuplicateMemberException;
 import com.devouk.devouk_back.domain.common.exception.MemberNotFoundException;
+import com.devouk.devouk_back.domain.common.exception.TaxonomyNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
@@ -107,6 +108,9 @@ public class GlobalExceptionHandler {
     }
     if (ex instanceof DuplicateMemberException) {
       return HttpStatus.CONFLICT;
+    }
+    if (ex instanceof TaxonomyNotFoundException) {
+      return HttpStatus.NOT_FOUND;
     }
     return HttpStatus.BAD_REQUEST;
   }

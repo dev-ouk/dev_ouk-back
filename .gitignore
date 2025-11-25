@@ -42,3 +42,4 @@ out/
 src/main/resources/application-*.yml
 
 ### H2/로컬 db 파일 ###
+test.sql
