@@ -1,5 +1,6 @@
 package com.devouk.devouk_back.infra.taxonomy;
 
+import java.util.Collection;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -21,4 +22,6 @@ public interface TermJpaRepository extends JpaRepository<TermEntity, Long> {
   List<TermEntity> searchByTaxonomyAndQ(@Param("code") String code, @Param("q") String q);
 
   boolean existsByTaxonomy_Code(String code);
+
+  List<TermEntity> findByTaxonomy_CodeAndSlugIn(String code, Collection<String> slugs);
 }
