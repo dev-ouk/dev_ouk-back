@@ -26,10 +26,21 @@ public class BaekjoonProblemSiteClient implements ProblemSiteClient {
   @Override
   public ProblemPreview fetchPreview(URI uri) {
     String problemId = extractProblemId(uri);
+    SolvedAcProblemResponse response = callSolvedAc(problemId);
+    List<String> algoSlugs = extractAlgoSlugs(response);
 
-    SolvedAcProblemResponse response;
+    return new ProblemPreview(
+        ProblemSite.BAEKJOON,
+        problemId,
+        response.getTitleKo(),
+        uri.toString(),
+        response.getLevel(),
+        Map.of("algo", algoSlugs));
+  }
+
+  private SolvedAcProblemResponse callSolvedAc(String problemId) {
     try {
-      response =
+      SolvedAcProblemResponse response =
           restClient
               .get()
               .uri("/problem/show?problemId={problemId}", problemId)
@@ -41,28 +52,38 @@ public class BaekjoonProblemSiteClient implements ProblemSiteClient {
                         "solved.ac 호출 실패 (" + res.getStatusCode() + ")");
                   })
               .body(SolvedAcProblemResponse.class);
+
+      if (response == null) {
+        throw new ProblemPreviewFetchException("solved.ac 응답 파싱에 실패했습니다.");
+      }
+
+      return response;
+
     } catch (RestClientException e) {
       throw new ProblemPreviewFetchException("solved.ac 호출 중 오류가 발생했습니다.");
     }
+  }
 
-    if (response == null) {
-      throw new ProblemPreviewFetchException("solved.ac 응답 파싱에 실패했습니다.");
+  private List<String> extractAlgoSlugs(SolvedAcProblemResponse response) {
+    if (response.getTags() == null) {
+      return List.of();
     }
 
-    List<String> algoSlugs =
-        response.getTags() != null
-            ? response.getTags().stream().map(SolvedAcTag::getKey).toList()
-            : List.of();
+    return response.getTags().stream().map(this::resolveTagSlugOrName).toList();
+  }
 
-    Map<String, List<String>> taxonomies = Map.of("algo", algoSlugs);
+  private String resolveTagSlugOrName(SolvedAcTag tag) {
+    List<SolvedAcTag.DisplayName> displayNames = tag.getDisplayNames();
 
-    return new ProblemPreview(
-        ProblemSite.BAEKJOON,
-        problemId,
-        response.getTitleKo(),
-        uri.toString(),
-        response.getLevel(),
-        taxonomies);
+    if (displayNames != null) {
+      return displayNames.stream()
+          .filter(d -> "en".equals(d.getLanguage()))
+          .map(SolvedAcTag.DisplayName::getName)
+          .findFirst()
+          .orElse(tag.getKey());
+    }
+
+    return tag.getKey();
   }
 
   private String extractProblemId(URI uri) {
@@ -105,9 +126,27 @@ public class BaekjoonProblemSiteClient implements ProblemSiteClient {
 
   public static class SolvedAcTag {
     private String key;
+    private List<DisplayName> displayNames;
 
     public String getKey() {
       return key;
+    }
+
+    public List<DisplayName> getDisplayNames() {
+      return displayNames;
+    }
+
+    public static class DisplayName {
+      private String language;
+      private String name;
+
+      public String getLanguage() {
+        return language;
+      }
+
+      public String getName() {
+        return name;
+      }
     }
   }
 }

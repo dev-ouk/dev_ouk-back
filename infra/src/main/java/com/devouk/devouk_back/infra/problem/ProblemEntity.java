@@ -6,6 +6,8 @@ import jakarta.persistence.*;
 import java.time.OffsetDateTime;
 import java.util.HashSet;
 import java.util.Set;
+import org.hibernate.annotations.JdbcType;
+import org.hibernate.dialect.PostgreSQLEnumJdbcType;
 
 @Entity
 @Table(
@@ -24,6 +26,7 @@ public class ProblemEntity {
 
   @Enumerated(EnumType.STRING)
   @Column(name = "site", nullable = false, columnDefinition = "ct_site")
+  @JdbcType(PostgreSQLEnumJdbcType.class)
   private ProblemSite site;
 
   @Column(name = "site_problem_id", nullable = false, length = 64)

@@ -4,9 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
-import com.devouk.devouk_back.domain.common.exception.BusinessException;
-import com.devouk.devouk_back.domain.common.exception.DuplicateMemberException;
-import com.devouk.devouk_back.domain.common.exception.MemberNotFoundException;
+import com.devouk.devouk_back.domain.common.exception.*;
+import com.devouk.devouk_back.domain.problem.ProblemSite;
 import com.devouk.devouk_back.member.dto.MemberRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolation;
@@ -240,5 +239,44 @@ public class GlobalExceptionHandlerTest {
     assertThat(body.getMessage()).isEqualTo("Internal server error");
     assertThat(body.getCorrelationId()).isEqualTo("");
     assertThat(body.getErrors()).isEmpty();
+  }
+
+  @Test
+  void handleBusiness_duplicateProblem_returns409() {
+    BusinessException ex = new DuplicateProblemException(ProblemSite.BAEKJOON, "1000");
+    HttpServletRequest req = mockRequest("/api/v1/problems");
+
+    ResponseEntity<ErrorResponse> response = handler.handleBusiness(ex, req);
+
+    assertThat(response.getStatusCode().value()).isEqualTo(409);
+    ErrorResponse body = response.getBody();
+    assertThat(body).isNotNull();
+    assertThat(body.getMessage()).contains("BAEKJOON").contains("1000");
+  }
+
+  @Test
+  void handleBusiness_problemTagNotFound_returns404() {
+    BusinessException ex = new ProblemTagNotFoundException(List.of("implementation"));
+    HttpServletRequest req = mockRequest("/api/v1/problems");
+
+    ResponseEntity<ErrorResponse> response = handler.handleBusiness(ex, req);
+
+    assertThat(response.getStatusCode().value()).isEqualTo(404);
+    ErrorResponse body = response.getBody();
+    assertThat(body).isNotNull();
+    assertThat(body.getMessage()).contains("implementation");
+  }
+
+  @Test
+  void handleBusiness_invalidProblemSite_returns400() {
+    BusinessException ex = new InvalidProblemSiteException("HACKERRANK");
+    HttpServletRequest req = mockRequest("/api/v1/problems");
+
+    ResponseEntity<ErrorResponse> response = handler.handleBusiness(ex, req);
+
+    assertThat(response.getStatusCode().value()).isEqualTo(400);
+    ErrorResponse body = response.getBody();
+    assertThat(body).isNotNull();
+    assertThat(body.getMessage()).contains("HACKERRANK");
   }
 }
