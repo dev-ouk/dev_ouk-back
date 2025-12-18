@@ -118,6 +118,12 @@ public class GlobalExceptionHandler {
     if (ex instanceof InvalidProblemSiteException) {
       return HttpStatus.BAD_REQUEST;
     }
+    if (ex instanceof InvalidAttemptVerdictException) {
+      return HttpStatus.BAD_REQUEST;
+    }
+    if (ex instanceof InvalidProblemSortOptionException) {
+      return HttpStatus.BAD_REQUEST;
+    }
     return HttpStatus.BAD_REQUEST;
   }
 
