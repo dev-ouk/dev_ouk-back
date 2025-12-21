@@ -2,7 +2,9 @@ package com.devouk.devouk_back.algo_note.slugpreview;
 
 import com.devouk.devouk_back.algo_note.slugpreview.dto.AlgoNoteSlugPreviewRequest;
 import com.devouk.devouk_back.algo_note.slugpreview.dto.AlgoNoteSlugPreviewResponse;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -16,7 +18,7 @@ public class AlgoNoteSlugPreviewController {
   }
 
   @PostMapping("/slug-preview")
-  public AlgoNoteSlugPreviewResponse slugPreview(AlgoNoteSlugPreviewRequest req) {
+  public AlgoNoteSlugPreviewResponse slugPreview(@RequestBody @Valid AlgoNoteSlugPreviewRequest req) {
     return appService.preview(req.getTitle());
   }
 }
