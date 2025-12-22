@@ -124,6 +124,16 @@ public class GlobalExceptionHandler {
     if (ex instanceof InvalidProblemSortOptionException) {
       return HttpStatus.BAD_REQUEST;
     }
+    if (ex instanceof DuplicateAlgoNoteSlugException) {
+      return HttpStatus.CONFLICT;
+    }
+    if (ex instanceof InvalidAlgoNoteStatusException) {
+      return HttpStatus.BAD_REQUEST;
+    }
+    if (ex instanceof AlgoNoteTagNotFoundException) {
+      return HttpStatus.NOT_FOUND;
+    }
+
     return HttpStatus.BAD_REQUEST;
   }
 

@@ -18,7 +18,8 @@ public class AlgoNoteSlugPreviewController {
   }
 
   @PostMapping("/slug-preview")
-  public AlgoNoteSlugPreviewResponse slugPreview(@RequestBody @Valid AlgoNoteSlugPreviewRequest req) {
+  public AlgoNoteSlugPreviewResponse slugPreview(
+      @RequestBody @Valid AlgoNoteSlugPreviewRequest req) {
     return appService.preview(req.getTitle());
   }
 }
