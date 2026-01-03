@@ -127,6 +127,18 @@ public class AlgoNoteEntity {
     return terms;
   }
 
+  public OffsetDateTime getPublishedAt() {
+    return publishedAt;
+  }
+
+  public OffsetDateTime getCreatedAt() {
+    return createdAt;
+  }
+
+  public OffsetDateTime getUpdatedAt() {
+    return updatedAt;
+  }
+
   public void addTerm(TermEntity term) {
     this.terms.add(term);
   }

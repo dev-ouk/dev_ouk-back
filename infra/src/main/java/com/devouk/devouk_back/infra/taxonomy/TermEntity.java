@@ -26,4 +26,8 @@ public class TermEntity {
   public String getName() {
     return name;
   }
+
+  public TaxonomyEntity getTaxonomy() {
+    return taxonomy;
+  }
 }
