@@ -133,6 +133,9 @@ public class GlobalExceptionHandler {
     if (ex instanceof AlgoNoteTagNotFoundException) {
       return HttpStatus.NOT_FOUND;
     }
+    if (ex instanceof AlgoNoteNotFoundException) {
+      return HttpStatus.NOT_FOUND;
+    }
 
     return HttpStatus.BAD_REQUEST;
   }

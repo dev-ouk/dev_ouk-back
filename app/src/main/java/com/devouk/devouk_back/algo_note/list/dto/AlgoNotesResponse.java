@@ -58,6 +58,10 @@ public class AlgoNotesResponse {
       this.taxonomies = taxonomies;
     }
 
+    public String getSlug() {
+      return slug;
+    }
+
     public String getTitle() {
       return title;
     }
