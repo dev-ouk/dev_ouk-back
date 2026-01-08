@@ -8,6 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.devouk.devouk_back.domain.problem.Problem;
 import com.devouk.devouk_back.domain.problem.ProblemSite;
+import com.devouk.devouk_back.error.ErrorCodeHttpStatusMapper;
 import com.devouk.devouk_back.problem.dto.ProblemCreateRequest;
 import com.devouk.devouk_back.problem.service.ProblemAppService;
 import java.util.List;
@@ -15,10 +16,12 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+@Import(ErrorCodeHttpStatusMapper.class)
 @WebMvcTest(controllers = ProblemController.class)
 class ProblemControllerWebMvcTest {
 

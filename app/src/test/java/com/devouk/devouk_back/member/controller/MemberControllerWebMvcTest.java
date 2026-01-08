@@ -8,6 +8,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import com.devouk.devouk_back.domain.common.exception.MemberNotFoundException;
+import com.devouk.devouk_back.error.ErrorCodeHttpStatusMapper;
 import com.devouk.devouk_back.member.dto.MemberRequest;
 import com.devouk.devouk_back.member.dto.MemberResponse;
 import com.devouk.devouk_back.member.service.MemberAppService;
@@ -18,10 +19,12 @@ import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+@Import(ErrorCodeHttpStatusMapper.class)
 @WebMvcTest(controllers = MemberController.class)
 public class MemberControllerWebMvcTest {
 

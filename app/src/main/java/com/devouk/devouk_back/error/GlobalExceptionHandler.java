@@ -18,6 +18,12 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+  private final ErrorCodeHttpStatusMapper statusMapper;
+
+  public GlobalExceptionHandler(ErrorCodeHttpStatusMapper statusMapper) {
+    this.statusMapper = statusMapper;
+  }
+
   @ExceptionHandler(MethodArgumentNotValidException.class)
   public ResponseEntity<ErrorResponse> handleMethodArgumentNotValid(
       MethodArgumentNotValidException ex, HttpServletRequest request) {
@@ -91,53 +97,12 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(BusinessException.class)
   public ResponseEntity<ErrorResponse> handleBusiness(
       BusinessException ex, HttpServletRequest request) {
-    HttpStatus status = mapBusinessExceptionToStatus(ex);
+    HttpStatus status = statusMapper.map(ex.getErrorCode());
 
     ErrorResponse body =
         ErrorResponse.of(request.getRequestURI(), ex.getMessage(), correlationId(), List.of());
 
     return ResponseEntity.status(status).body(body);
-  }
-
-  private HttpStatus mapBusinessExceptionToStatus(BusinessException ex) {
-    if (ex instanceof MemberNotFoundException) {
-      return HttpStatus.NOT_FOUND;
-    }
-    if (ex instanceof DuplicateMemberException) {
-      return HttpStatus.CONFLICT;
-    }
-    if (ex instanceof TaxonomyNotFoundException) {
-      return HttpStatus.NOT_FOUND;
-    }
-    if (ex instanceof DuplicateProblemException) {
-      return HttpStatus.CONFLICT;
-    }
-    if (ex instanceof ProblemTagNotFoundException) {
-      return HttpStatus.NOT_FOUND;
-    }
-    if (ex instanceof InvalidProblemSiteException) {
-      return HttpStatus.BAD_REQUEST;
-    }
-    if (ex instanceof InvalidAttemptVerdictException) {
-      return HttpStatus.BAD_REQUEST;
-    }
-    if (ex instanceof InvalidProblemSortOptionException) {
-      return HttpStatus.BAD_REQUEST;
-    }
-    if (ex instanceof DuplicateAlgoNoteSlugException) {
-      return HttpStatus.CONFLICT;
-    }
-    if (ex instanceof InvalidAlgoNoteStatusException) {
-      return HttpStatus.BAD_REQUEST;
-    }
-    if (ex instanceof AlgoNoteTagNotFoundException) {
-      return HttpStatus.NOT_FOUND;
-    }
-    if (ex instanceof AlgoNoteNotFoundException) {
-      return HttpStatus.NOT_FOUND;
-    }
-
-    return HttpStatus.BAD_REQUEST;
   }
 
   @ExceptionHandler(Exception.class)

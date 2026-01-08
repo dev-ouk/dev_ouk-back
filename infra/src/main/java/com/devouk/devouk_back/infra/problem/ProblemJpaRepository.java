@@ -2,6 +2,7 @@ package com.devouk.devouk_back.infra.problem;
 
 import com.devouk.devouk_back.domain.problem.ProblemSite;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -39,4 +40,6 @@ public interface ProblemJpaRepository extends JpaRepository<ProblemEntity, Long>
       @Param("sites") List<ProblemSite> sites,
       @Param("cursorId") Long cursorId,
       Pageable pageable);
+
+  Optional<ProblemEntity> findBySiteAndSiteProblemId(ProblemSite site, String siteProblemId);
 }

@@ -22,6 +22,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.MDC;
 import org.springframework.core.MethodParameter;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BeanPropertyBindingResult;
@@ -30,7 +31,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 
 public class GlobalExceptionHandlerTest {
 
-  GlobalExceptionHandler handler = new GlobalExceptionHandler();
+  private final ErrorCodeHttpStatusMapper statusMapper = mock(ErrorCodeHttpStatusMapper.class);
+  private final GlobalExceptionHandler handler = new GlobalExceptionHandler(statusMapper);
 
   @AfterEach
   void clearMdc() {
@@ -185,6 +187,8 @@ public class GlobalExceptionHandlerTest {
     BusinessException ex = new DuplicateMemberException("dup@test.com");
     HttpServletRequest req = mockRequest("/members");
 
+    given(statusMapper.map(ex.getErrorCode())).willReturn(HttpStatus.CONFLICT);
+
     ResponseEntity<ErrorResponse> response = handler.handleBusiness(ex, req);
 
     assertThat(response.getStatusCode().value()).isEqualTo(409);
@@ -199,6 +203,8 @@ public class GlobalExceptionHandlerTest {
     BusinessException ex = new MemberNotFoundException(999L);
     HttpServletRequest req = mockRequest("/members/999");
 
+    given(statusMapper.map(ex.getErrorCode())).willReturn(HttpStatus.NOT_FOUND);
+
     ResponseEntity<ErrorResponse> response = handler.handleBusiness(ex, req);
 
     assertThat(response.getStatusCode().value()).isEqualTo(404);
@@ -210,7 +216,7 @@ public class GlobalExceptionHandlerTest {
 
   static class SomeOtherBusinessException extends BusinessException {
     public SomeOtherBusinessException(String message) {
-      super(message);
+      super(ErrorCode.INVALID_CURSOR, message);
     }
   }
 
@@ -218,6 +224,8 @@ public class GlobalExceptionHandlerTest {
   void handleBusiness_otherBusinessException_returns400() {
     BusinessException ex = new SomeOtherBusinessException("weird");
     HttpServletRequest req = mockRequest("/weird");
+
+    given(statusMapper.map(ex.getErrorCode())).willReturn(HttpStatus.BAD_REQUEST);
 
     ResponseEntity<ErrorResponse> response = handler.handleBusiness(ex, req);
 
@@ -246,6 +254,8 @@ public class GlobalExceptionHandlerTest {
     BusinessException ex = new DuplicateProblemException(ProblemSite.BAEKJOON, "1000");
     HttpServletRequest req = mockRequest("/api/v1/problems");
 
+    given(statusMapper.map(ex.getErrorCode())).willReturn(HttpStatus.CONFLICT);
+
     ResponseEntity<ErrorResponse> response = handler.handleBusiness(ex, req);
 
     assertThat(response.getStatusCode().value()).isEqualTo(409);
@@ -259,6 +269,8 @@ public class GlobalExceptionHandlerTest {
     BusinessException ex = new ProblemTagNotFoundException(List.of("implementation"));
     HttpServletRequest req = mockRequest("/api/v1/problems");
 
+    given(statusMapper.map(ex.getErrorCode())).willReturn(HttpStatus.NOT_FOUND);
+
     ResponseEntity<ErrorResponse> response = handler.handleBusiness(ex, req);
 
     assertThat(response.getStatusCode().value()).isEqualTo(404);
@@ -271,6 +283,8 @@ public class GlobalExceptionHandlerTest {
   void handleBusiness_invalidProblemSite_returns400() {
     BusinessException ex = new InvalidProblemSiteException("HACKERRANK");
     HttpServletRequest req = mockRequest("/api/v1/problems");
+
+    given(statusMapper.map(ex.getErrorCode())).willReturn(HttpStatus.BAD_REQUEST);
 
     ResponseEntity<ErrorResponse> response = handler.handleBusiness(ex, req);
 

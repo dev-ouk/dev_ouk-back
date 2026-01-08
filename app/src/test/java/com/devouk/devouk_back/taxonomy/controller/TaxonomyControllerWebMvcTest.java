@@ -8,6 +8,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import com.devouk.devouk_back.domain.common.exception.TaxonomyNotFoundException;
+import com.devouk.devouk_back.error.ErrorCodeHttpStatusMapper;
 import com.devouk.devouk_back.taxonomy.dto.TaxonomyResponse;
 import com.devouk.devouk_back.taxonomy.dto.TaxonomyTermsResponse;
 import com.devouk.devouk_back.taxonomy.dto.TermItemResponse;
@@ -18,9 +19,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+@Import(ErrorCodeHttpStatusMapper.class)
 @WebMvcTest(controllers = TaxonomyController.class)
 public class TaxonomyControllerWebMvcTest {
 
