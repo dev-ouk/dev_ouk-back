@@ -19,6 +19,8 @@ public class ErrorCodeHttpStatusMapper {
     MAP.put(ErrorCode.PROBLEM_TAG_NOT_FOUND, HttpStatus.NOT_FOUND);
     MAP.put(ErrorCode.ALGO_NOTE_NOT_FOUND, HttpStatus.NOT_FOUND);
     MAP.put(ErrorCode.ALGO_NOTE_TAG_NOT_FOUND, HttpStatus.NOT_FOUND);
+    MAP.put(ErrorCode.ATTEMPT_NOT_FOUND, HttpStatus.NOT_FOUND);
+    MAP.put(ErrorCode.ALGO_NOTE_SLUGS_NOT_FOUND, HttpStatus.NOT_FOUND);
 
     // 409
     MAP.put(ErrorCode.DUPLICATE_MEMBER, HttpStatus.CONFLICT);

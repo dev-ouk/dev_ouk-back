@@ -1,5 +1,7 @@
 package com.devouk.devouk_back.infra.algo_note;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -17,4 +19,6 @@ public interface AlgoNoteJpaRepository extends JpaRepository<AlgoNoteEntity, Lon
                     where n.slug = :slug
         """)
   Optional<AlgoNoteEntity> findOneBySlugWithTerms(@Param("slug") String slug);
+
+  List<AlgoNoteEntity> findBySlugIn(Collection<String> slugs);
 }
