@@ -3,7 +3,6 @@ package com.devouk.devouk_back.infra.problem;
 import com.devouk.devouk_back.domain.problem.AttemptFailType;
 import com.devouk.devouk_back.domain.problem.AttemptLanguage;
 import com.devouk.devouk_back.domain.problem.AttemptVerdict;
-import com.devouk.devouk_back.infra.problem.convert.AttemptLanguageConverter;
 import jakarta.persistence.*;
 import java.time.OffsetDateTime;
 import java.util.UUID;
@@ -29,8 +28,9 @@ public class AttemptEntity {
   @Column(name = "time_spent", nullable = false)
   private Integer timeSpent;
 
-  @Convert(converter = AttemptLanguageConverter.class)
+  @Enumerated(EnumType.STRING)
   @Column(name = "language", nullable = false, columnDefinition = "ct_language")
+  @JdbcType(PostgreSQLEnumJdbcType.class)
   private AttemptLanguage language;
 
   @Lob
@@ -122,5 +122,45 @@ public class AttemptEntity {
 
   public OffsetDateTime getAttemptedAt() {
     return attemptedAt;
+  }
+
+  public Integer getTimeSpent() {
+    return timeSpent;
+  }
+
+  public AttemptLanguage getLanguage() {
+    return language;
+  }
+
+  public String getNotes() {
+    return notes;
+  }
+
+  public String getCode() {
+    return code;
+  }
+
+  public AttemptFailType getFailType() {
+    return failType;
+  }
+
+  public String getFailDetail() {
+    return failDetail;
+  }
+
+  public String getSolution() {
+    return solution;
+  }
+
+  public OffsetDateTime getCreatedAt() {
+    return createdAt;
+  }
+
+  public OffsetDateTime getUpdatedAt() {
+    return updatedAt;
+  }
+
+  public OffsetDateTime getNextReviewAt() {
+    return nextReviewAt;
   }
 }

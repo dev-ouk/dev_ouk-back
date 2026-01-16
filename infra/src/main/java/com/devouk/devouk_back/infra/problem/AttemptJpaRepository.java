@@ -23,4 +23,8 @@ public interface AttemptJpaRepository extends JpaRepository<AttemptEntity, Long>
   List<AttemptEntity> findLatestByProblemIds(@Param("problemIds") Collection<Long> problemIds);
 
   boolean existsByAttemptUuid(UUID attemptUuid);
+
+  List<AttemptEntity> findByProblem_IdOrderByAttemptedAtDescIdDesc(Long problemId);
+
+  long countByProblem_Id(Long problemId);
 }
