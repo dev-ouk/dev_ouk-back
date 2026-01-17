@@ -29,6 +29,18 @@ public class AttemptAlgoNoteLinkEntity {
     this.pk = new Pk(attempt.getId(), algoNote.getId());
   }
 
+  public Pk getPk() {
+    return pk;
+  }
+
+  public AttemptEntity getAttempt() {
+    return attempt;
+  }
+
+  public AlgoNoteEntity getAlgoNote() {
+    return algoNote;
+  }
+
   @Embeddable
   public static class Pk implements Serializable {
 
