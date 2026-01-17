@@ -44,6 +44,11 @@ public class ErrorCodeHttpStatusMapper {
     MAP.put(ErrorCode.INVALID_CURSOR, HttpStatus.BAD_REQUEST);
     MAP.put(ErrorCode.INVALID_CREATED_AT_RANGE, HttpStatus.BAD_REQUEST);
 
+    MAP.put(ErrorCode.INVALID_ACTIVITY_TYPE, HttpStatus.BAD_REQUEST);
+    MAP.put(ErrorCode.INVALID_ACTIVITY_GROUP_BY, HttpStatus.BAD_REQUEST);
+    MAP.put(ErrorCode.INVALID_ACTIVITY_TIME_ZONE, HttpStatus.BAD_REQUEST);
+    MAP.put(ErrorCode.INVALID_ACTIVITY_DATE_RANGE, HttpStatus.BAD_REQUEST);
+
     // 502
     MAP.put(ErrorCode.PROBLEM_PREVIEW_FETCH_FAILED, HttpStatus.BAD_GATEWAY);
   }
