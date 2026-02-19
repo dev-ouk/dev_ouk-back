@@ -18,8 +18,13 @@ public interface ProblemJpaRepository extends JpaRepository<ProblemEntity, Long>
                               where(:q is null or :q = ''
                                         or p.siteProblemId like concat(:q, '%')
                                                   or lower(p.title) like concat('%', lower(:q), '%'))
-                                                            and (:cursorId is null or p.id > :cursorId)
-                                                                      order by p.id asc
+                                                            and (
+                                                              :cursorId is null
+                                                              or p.createdAt < (select c.createdAt from ProblemEntity c where c.id = :cursorId)
+                                                              or (p.createdAt = (select c.createdAt from ProblemEntity c where c.id = :cursorId)
+                                                                  and p.id < :cursorId)
+                                                            )
+                                                                      order by p.createdAt desc, p.id desc
           """)
   List<ProblemEntity> searchCandidatesNoSite(
       @Param("q") String q, @Param("cursorId") Long cursorId, Pageable pageable);
@@ -32,8 +37,13 @@ public interface ProblemJpaRepository extends JpaRepository<ProblemEntity, Long>
                                         and (:q is null or :q = ''
                                                   or p.siteProblemId like concat(:q, '%')
                                                             or lower(p.title) like concat('%', lower(:q), '%'))
-                                                                      and (:cursorId is null or p.id > :cursorId)
-                                                                                order by p.id asc
+                                                                      and (
+                                                                        :cursorId is null
+                                                                        or p.createdAt < (select c.createdAt from ProblemEntity c where c.id = :cursorId)
+                                                                        or (p.createdAt = (select c.createdAt from ProblemEntity c where c.id = :cursorId)
+                                                                            and p.id < :cursorId)
+                                                                      )
+                                                                                order by p.createdAt desc, p.id desc
           """)
   List<ProblemEntity> searchCandidatesWithSites(
       @Param("q") String q,
